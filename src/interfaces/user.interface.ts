@@ -27,3 +27,9 @@ export interface ILoginResponse {
   success: boolean;
   message: string;
 }
+
+export interface IUserSignup {
+  code: number;
+  success: string;
+  message: string;
+}
