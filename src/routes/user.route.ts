@@ -2,6 +2,8 @@ import express, { IRouter } from 'express';
 import userController from '../controllers/user.controller';
 import userValidator from '../validators/user.validator';
 import { userAuth } from '../middlewares/auth.middleware';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class UserRoutes {
   private UserController = new userController();
@@ -24,6 +26,12 @@ class UserRoutes {
     );
 
     this.router.post('/login', this.UserController.login);
+
+    this.router.post(
+      '/forget_password',
+      userAuth(process.env.jwt_sceret_key),
+      this.UserController.forgetpassword
+    );
   };
 
   public getRoutes = (): IRouter => {
