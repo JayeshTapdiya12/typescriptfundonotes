@@ -2,7 +2,8 @@ import User from '../models/user.model';
 import {
   IUser,
   IUserError,
-  ILoginResponse
+  ILoginResponse,
+  IUserSignup
 } from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
 
@@ -18,9 +19,37 @@ class UserService {
   };
 
   //create new user
-  public newUser = async (body: IUser): Promise<IUser> => {
-    const data = await User.create(body);
-    return data;
+  public newUser = async (
+    body: IUser
+  ): Promise<IUser | IUserError | ILoginResponse | IUserSignup> => {
+    try {
+      const data = await User.findOne({ email: body.email });
+
+      if (!data) {
+        const saltround = 10;
+        const hashPassword = await bcrypt.hash(body.password, saltround);
+        body.password = hashPassword;
+
+        await User.create(body);
+        return {
+          code: 200,
+          success: true,
+          message: 'User email is created'
+        };
+      } else {
+        return {
+          code: 200,
+          success: false,
+          message: 'User email already exists!'
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        success: false,
+        message: 'An error occurred while signing up the user.'
+      };
+    }
   };
 
   public login = async (
