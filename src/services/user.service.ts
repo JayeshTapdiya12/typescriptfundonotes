@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt';
 
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { sendMail } from '../utils/emailsender';
 dotenv.config();
 
 class UserService {
@@ -91,6 +92,51 @@ class UserService {
             success: false
           };
         }
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
+
+  public forgetpassword = async (
+    body
+  ): Promise<IUser | ILoginResponse | IUserError | IUserSignup> => {
+    try {
+      const data = await User.findOne({ email: body.email });
+      if (!data) {
+        return {
+          code: 400,
+          success: false,
+          message: 'the email does not exist'
+        };
+      } else {
+        const token = await jwt.sign(
+          { email: data.email, userName: data.fname, userId: data._id },
+          process.env.jwt_sceret_key,
+          { expiresIn: '1h' }
+        );
+
+        const content = `
+          <h1>Hello, ${data.fname}</h1>
+          <p>Click the link below to reset your password:</p>
+          <a href="http://localhost:${process.env.APP_PORT}/api/${process.env.API_VERSION}/users/forget_password/${token}">
+            Reset Password
+          </a>
+        `;
+
+        const subject = 'Password Reset Link';
+
+        await sendMail({ email: data.email, subject: subject, body: content });
+        return {
+          code: 200,
+          success: true,
+          message: 'Password reset email sent successfully'
+        };
       }
     } catch (error) {
       return {
