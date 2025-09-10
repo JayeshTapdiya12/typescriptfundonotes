@@ -4,7 +4,11 @@ import userService from '../services/user.service';
 
 import { Request, Response, NextFunction } from 'express';
 
-import { ILoginResponse, IUserError } from '../interfaces/user.interface';
+import {
+  ILoginResponse,
+  IUserError,
+  IUserSignup
+} from '../interfaces/user.interface';
 
 class UserController {
   public UserService = new userService();
@@ -33,13 +37,16 @@ class UserController {
   ): Promise<any> => {
     try {
       const data = await this.UserService.newUser(req.body);
-      res.status(HttpStatus.CREATED).json({
-        code: HttpStatus.CREATED,
-        data: data,
-        message: 'User created successfully'
-      });
+      if ((data as IUserSignup).code) {
+        res.status((data as IUserSignup).code).json(data);
+      } else {
+        res.status((data as IUserError).code).json(data);
+      }
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        message: 'An error occurred during signup of the user',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   };
 
