@@ -1,8 +1,16 @@
 import User from '../models/user.model';
-import { IUser } from '../interfaces/user.interface';
+import {
+  IUser,
+  IUserError,
+  ILoginResponse
+} from '../interfaces/user.interface';
+import bcrypt from 'bcrypt';
+
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class UserService {
-
   //get all users
   public getAllUsers = async (): Promise<IUser[]> => {
     const data = await User.find();
@@ -15,30 +23,54 @@ class UserService {
     return data;
   };
 
-  //update a user
-  public updateUser = async (_id: string, body: IUser): Promise<IUser> => {
-    const data = await User.findByIdAndUpdate(
-      {
-        _id
-      },
-      body,
-      {
-        new: true
+  public login = async (
+    body: IUser
+  ): Promise<IUser | IUserError | ILoginResponse> => {
+    try {
+      const data = await User.findOne({ email: body.email });
+      if (!data) {
+        return {
+          code: 404,
+          message: 'the email is not found',
+          success: false
+        };
+      } else {
+        const password_isvalid = await bcrypt.compare(
+          body.password,
+          data.password
+        );
+
+        if (password_isvalid) {
+          const token = await jwt.sign(
+            { email: data.email, user_id: data._id, username: data.fname },
+            process.env.jwt_sceret_key
+          );
+          return {
+            code: 200,
+            data: {
+              token: token,
+              name: data.fname,
+              email: data.email
+            },
+            success: true,
+            message: 'user login succesfully!'
+          };
+        } else {
+          return {
+            code: 404,
+            message: 'the password is wrong',
+            success: false
+          };
+        }
       }
-    );
-    return data;
-  };
-
-  //delete a user
-  public deleteUser = async (_id: string): Promise<string> => {
-    await User.findByIdAndDelete(_id);
-    return '';
-  };
-
-  //get a single user
-  public getUser = async (_id: string): Promise<IUser> => {
-    const data = await User.findById(_id);
-    return data;
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
   };
 }
 
