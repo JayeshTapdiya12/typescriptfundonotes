@@ -69,6 +69,26 @@ class UserController {
       });
     }
   };
+
+  public forgetpassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const data = await this.UserService.forgetpassword(req.body);
+      if ((data as ILoginResponse).code) {
+        res.status((data as ILoginResponse).code).json(data);
+      } else {
+        res.status((data as IUserError).code).json(data);
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: 'An error occurred during forget password',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  };
 }
 
 export default UserController;
