@@ -193,5 +193,37 @@ class NoteService {
       };
     }
   };
+
+  public color = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'note did not exisit',
+          success: false
+        };
+      } else {
+        await data.update({ color: body.color });
+        await data.save();
+        return {
+          code: 200,
+          message: `Note color has been updated successfully`,
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
