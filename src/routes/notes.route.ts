@@ -54,6 +54,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.updateNote
     );
+
+    //   color the note
+    this.router.patch(
+      '/:_id/color',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.color
+    );
   };
 
   public getRoutes = (): IRouter => {
