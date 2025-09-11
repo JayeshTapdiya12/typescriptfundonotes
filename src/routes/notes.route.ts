@@ -47,6 +47,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.trash
     );
+
+    // update the note
+    this.router.put(
+      '/:_id',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.updateNote
+    );
   };
 
   public getRoutes = (): IRouter => {
