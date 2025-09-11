@@ -225,5 +225,44 @@ class NoteService {
       };
     }
   };
+
+  public deleteNote = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'note did not exisit',
+          success: false
+        };
+      } else {
+        if (data.isArchived === true) {
+          return {
+            code: 200,
+            success: false,
+            message: 'the note is archived which can not be deleted'
+          };
+        }
+        await data.deleteOne();
+
+        return {
+          code: 200,
+          message: `Note  has been delete successfully`,
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
