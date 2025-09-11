@@ -40,6 +40,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.archived
     );
+
+    //   is trash note
+    this.router.post(
+      '/:_id/istrash',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.trash
+    );
   };
 
   public getRoutes = (): IRouter => {
