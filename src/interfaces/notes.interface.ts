@@ -13,3 +13,23 @@ export interface INotes extends Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface INotesSuccess {
+  code: number;
+  message: string;
+  success: boolean;
+  data: object;
+}
+
+export interface INoteNotFound {
+  code: number;
+  message: string;
+  success: boolean;
+}
+
+export interface INoteError {
+  code: number;
+  message: string;
+  success: boolean;
+  error: string;
+}
