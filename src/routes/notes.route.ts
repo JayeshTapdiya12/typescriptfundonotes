@@ -20,6 +20,11 @@ class NoteRoutes {
     );
 
     //   creating the note
+    this.router.post(
+      '/addnote',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.addNote
+    );
   };
 
   public getRoutes = (): IRouter => {
