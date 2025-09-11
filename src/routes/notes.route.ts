@@ -61,6 +61,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.color
     );
+
+    //   delete the note
+    this.router.delete(
+      '/:_id',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.deleteNote
+    );
   };
 
   public getRoutes = (): IRouter => {
