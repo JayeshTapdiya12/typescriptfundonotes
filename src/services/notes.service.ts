@@ -42,5 +42,26 @@ class NoteService {
       };
     }
   };
+
+  public addNote = async (
+    body
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.create(body);
+      return {
+        code: 200,
+        success: true,
+        data: data,
+        message: 'the note is succefully created'
+      };
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
