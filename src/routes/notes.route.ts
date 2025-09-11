@@ -13,10 +13,18 @@ class NoteRoutes {
     this.routes();
   }
   private routes = () => {
+    //    get all the notes
     this.router.get(
       '/getallnotes',
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.getAllNotes
+    );
+
+    // get note by id
+    this.router.get(
+      '/:_id/getnote',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.getnotebyid
     );
 
     //   creating the note
