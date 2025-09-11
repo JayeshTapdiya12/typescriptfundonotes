@@ -30,6 +30,6 @@ export interface ILoginResponse {
 
 export interface IUserSuccess {
   code: number;
-  success: string;
+  success: boolean;
   message: string;
 }
