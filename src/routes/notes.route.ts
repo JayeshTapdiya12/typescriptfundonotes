@@ -33,6 +33,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.addNote
     );
+
+    //   is archived note
+    this.router.post(
+      '/:_id/isarchived',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.archived
+    );
   };
 
   public getRoutes = (): IRouter => {
