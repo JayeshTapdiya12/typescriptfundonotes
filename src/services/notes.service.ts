@@ -127,5 +127,39 @@ class NoteService {
       };
     }
   };
+
+  public trash = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'note did not exisit',
+          success: false
+        };
+      } else {
+        data.isTrashed = !data.isTrashed;
+        await data.save();
+        return {
+          code: 200,
+          message: `Note has been ${
+            data.isTrashed ? 'Trashe' : 'trashed'
+          } successfully`,
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
