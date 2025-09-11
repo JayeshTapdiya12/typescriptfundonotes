@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 import {
   ILoginResponse,
   IUserError,
-  IUserSignup
+  IUserSuccess
 } from '../interfaces/user.interface';
 
 class UserController {
@@ -37,8 +37,8 @@ class UserController {
   ): Promise<any> => {
     try {
       const data = await this.UserService.newUser(req.body);
-      if ((data as IUserSignup).code) {
-        res.status((data as IUserSignup).code).json(data);
+      if ((data as IUserSuccess).code) {
+        res.status((data as IUserSuccess).code).json(data);
       } else {
         res.status((data as IUserError).code).json(data);
       }
@@ -85,6 +85,26 @@ class UserController {
     } catch (error) {
       res.status(500).json({
         message: 'An error occurred during forget password',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  };
+
+  public resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const data = await this.UserService.resetPassword(req.body);
+      if ((data as IUserSuccess).code) {
+        res.status((data as IUserSuccess).code).json(data);
+      } else {
+        res.status((data as IUserError).code).json(data);
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: 'An error occurred during reset password',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
