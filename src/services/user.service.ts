@@ -3,7 +3,7 @@ import {
   IUser,
   IUserError,
   ILoginResponse,
-  IUserSignup
+  IUserSuccess
 } from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
 
@@ -22,7 +22,7 @@ class UserService {
   //create new user
   public newUser = async (
     body: IUser
-  ): Promise<IUser | IUserError | ILoginResponse | IUserSignup> => {
+  ): Promise<IUser | IUserError | ILoginResponse | IUserSuccess> => {
     try {
       const data = await User.findOne({ email: body.email });
 
@@ -105,7 +105,7 @@ class UserService {
 
   public forgetpassword = async (
     body
-  ): Promise<IUser | ILoginResponse | IUserError | IUserSignup> => {
+  ): Promise<IUser | ILoginResponse | IUserError | IUserSuccess> => {
     try {
       const data = await User.findOne({ email: body.email });
       if (!data) {
@@ -136,6 +136,38 @@ class UserService {
           code: 200,
           success: true,
           message: 'Password reset email sent successfully'
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
+
+  public resetPassword = async (
+    body
+  ): Promise<IUser | IUserError | IUserSuccess> => {
+    try {
+      const data = await User.findOne({ email: body.email });
+      if (!data) {
+        return {
+          code: 404,
+          message: 'The email is not found',
+          success: false
+        };
+      } else {
+        const saltround = 10;
+        const hashPassword = await bcrypt.hash(body.password, saltround);
+        data.password = hashPassword;
+        await data.save();
+        return {
+          code: 200,
+          message: 'your password is reset !!',
+          success: true
         };
       }
     } catch (error) {
