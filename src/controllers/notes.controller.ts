@@ -33,6 +33,28 @@ class NoteController {
       });
     }
   };
+
+  public addNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const data = await this.noteService.addNote(req.body);
+      if ((data as INotesSuccess).code) {
+        res.status((data as INotesSuccess).code).json(data);
+      } else if ((data as INoteNotFound).code) {
+        res.status((data as INoteNotFound).code).json(data);
+      } else {
+        res.status((data as INoteError).code).json(data);
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: 'An error occurred during creating  notes  of the user',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  };
 }
 
 export default NoteController;
