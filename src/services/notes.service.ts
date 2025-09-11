@@ -43,6 +43,36 @@ class NoteService {
     }
   };
 
+  public getnotebyid = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'the note doest exists',
+          success: false
+        };
+      } else {
+        return {
+          code: 200,
+          success: true,
+          data: data,
+          message: 'the note is succefully fetched by id '
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
+
   public addNote = async (
     body
   ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
