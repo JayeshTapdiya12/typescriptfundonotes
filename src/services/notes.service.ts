@@ -402,5 +402,42 @@ class NoteService {
       };
     }
   };
+  public getreminder = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'the note does not found',
+          success: false
+        };
+      } else {
+        if (!data.reminder) {
+          return {
+            code: 200,
+            message: 'the note doesnote contain the reminder',
+            success: true
+          };
+        } else {
+          return {
+            code: 200,
+            message: 'the reminder succesfullt fetched ',
+            data: data.reminder,
+            success: true
+          };
+        }
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
