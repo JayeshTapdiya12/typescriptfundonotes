@@ -8,64 +8,65 @@ dotenv.config();
 class NoteRoutes {
   private NoteController = new notesController();
   private router = express.Router();
-
+  private jwtSecret: string;
   constructor() {
+    this.jwtSecret = process.env.jwt_sceret_key || '';
     this.routes();
   }
   private routes = () => {
     //    get all the notes
     this.router.get(
       '/getallnotes',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.getAllNotes
     );
 
     // get note by id
     this.router.get(
       '/:_id/getnote',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.getnotebyid
     );
 
     //   creating the note
     this.router.post(
       '/addnote',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.addNote
     );
 
     //   is archived note
     this.router.post(
       '/:_id/isarchived',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.archived
     );
 
     //   is trash note
     this.router.post(
       '/:_id/istrash',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.trash
     );
 
     // update the note
     this.router.put(
       '/:_id',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.updateNote
     );
 
     //   color the note
     this.router.patch(
       '/:_id/color',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.color
     );
 
     //   delete the note
     this.router.delete(
       '/:_id',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.deleteNote
     );
 
@@ -73,15 +74,22 @@ class NoteRoutes {
     //   get the labels
     this.router.get(
       '/label',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.getlabel
     );
 
     // add labels
     this.router.get(
       '/:_id/addlabel',
-      userAuth(process.env.jwt_sceret_key),
+      userAuth(this.jwtSecret),
       this.NoteController.addlabel
+    );
+
+    // update  label
+    this.router.put(
+      '/updatelabel',
+      userAuth(this.jwtSecret),
+      this.NoteController.updateLabel
     );
   };
 
