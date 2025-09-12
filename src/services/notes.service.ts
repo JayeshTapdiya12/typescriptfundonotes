@@ -592,10 +592,46 @@ class NoteService {
         };
       } else {
         let collaborators = data.collaborators || [];
+
         let newcollaborators = Array.isArray(body.collaborators)
           ? body.collaborators
           : [body.collaborators];
         collaborators = [...new Set([...collaborators, ...newcollaborators])];
+        await data.update({ collaborators: collaborators });
+
+        return {
+          code: 200,
+          message: 'collaborators deleted successfully',
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
+
+  public deleteCollaborators = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'the note does not found',
+          success: false
+        };
+      } else {
+        let collaborators = data.collaborators || [];
+        collaborators = collaborators.filter((c) => c !== body.email);
+
         await data.update({ collaborators: collaborators });
 
         return {
