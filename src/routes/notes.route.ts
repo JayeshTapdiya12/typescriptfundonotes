@@ -145,10 +145,18 @@ class NoteRoutes {
       this.NoteController.getCollaborators
     );
 
+    // add collaborators
     this.router.post(
       '/:_id/addcollaborators',
       userAuth(this.jwtSecret),
       this.NoteController.addCollaborators
+    );
+    // delete collaborators
+
+    this.router.delete(
+      '/:_id/deletecollaborators',
+      userAuth(this.jwtSecret),
+      this.NoteController.deleteCollaborators
     );
   };
 
