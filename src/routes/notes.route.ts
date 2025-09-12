@@ -68,6 +68,14 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.deleteNote
     );
+
+    //   label of the notes start from here
+    //   get the labels
+    this.router.get(
+      '/label',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.getlabel
+    );
   };
 
   public getRoutes = (): IRouter => {
