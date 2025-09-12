@@ -192,7 +192,7 @@ class NoteController {
     }
   };
 
-  // labels :
+  // labels starts from here
 
   public getlabel = async (
     req: Request,
@@ -283,6 +283,31 @@ class NoteController {
       res.status(500).json({
         message:
           'An error occurred during deleting  the label of  the note  of the user',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  };
+
+  // reminder starts from here
+  public getreminder = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const data = await this.noteService.getreminder(req.body, req.params._id);
+
+      if ((data as INotesSuccess).code) {
+        res.status((data as INotesSuccess).code).json(data);
+      } else if ((data as INoteNotFound).code) {
+        res.status((data as INoteNotFound).code).json(data);
+      } else {
+        res.status((data as INoteError).code).json(data);
+      }
+    } catch (error) {
+      res.status(500).json({
+        message:
+          'An error occurred during getting   the reminder of  the note  of the user',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
