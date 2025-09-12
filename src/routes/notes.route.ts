@@ -91,6 +91,12 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.updateLabel
     );
+
+    this.router.delete(
+      '/:_id/deletelabel',
+      userAuth(this.jwtSecret),
+      this.NoteController.deletelabel
+    );
   };
 
   public getRoutes = (): IRouter => {
