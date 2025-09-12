@@ -368,5 +368,39 @@ class NoteService {
       };
     }
   };
+
+  public deletelabel = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data) {
+        return {
+          code: 400,
+          message: 'the note does not found',
+          success: false
+        };
+      } else {
+        let labels = data.label || [];
+        labels = labels.filter((l) => l !== body.label);
+        await data.update({ label: labels });
+
+        return {
+          code: 200,
+          message: 'Labels deleted successfully',
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
