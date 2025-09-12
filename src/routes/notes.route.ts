@@ -97,6 +97,26 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.deletelabel
     );
+
+    // reminder in notes:
+    // {
+    //   "date": "2025-08-29",
+    //   "time": "14:30:00",
+    //   "repeat": "weekly",
+    //   "repeat_custom": {
+    //     "daysOfWeek": [1, 3, 5],
+    //     "interval": 2,
+    //     "endDate": "2025-12-31"
+    //   }
+    // }
+
+    // get reminder
+
+    this.router.get(
+      '/:_id/getreminder',
+      userAuth(this.jwtSecret),
+      this.NoteController.getreminder
+    );
   };
 
   public getRoutes = (): IRouter => {
