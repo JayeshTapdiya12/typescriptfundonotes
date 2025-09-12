@@ -123,6 +123,13 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.addreminder
     );
+    // update the reminder
+
+    this.router.put(
+      '/:_id/updatereminder',
+      userAuth(this.jwtSecret),
+      this.NoteController.updateReminder
+    );
   };
 
   public getRoutes = (): IRouter => {
