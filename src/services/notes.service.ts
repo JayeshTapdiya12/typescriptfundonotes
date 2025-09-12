@@ -264,5 +264,34 @@ class NoteService {
       };
     }
   };
+
+  public getlabel = async (
+    body
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.distinct('label', { createdBy: body.createdBy });
+      if (!data || data.length === 0) {
+        return {
+          code: 400,
+          message: 'no label for the notes/user',
+          success: false
+        };
+      } else {
+        return {
+          code: 200,
+          message: 'Labels fetched successfully',
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
