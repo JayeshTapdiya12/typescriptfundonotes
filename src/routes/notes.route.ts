@@ -76,6 +76,13 @@ class NoteRoutes {
       userAuth(process.env.jwt_sceret_key),
       this.NoteController.getlabel
     );
+
+    // add labels
+    this.router.get(
+      '/:_id/addlabel',
+      userAuth(process.env.jwt_sceret_key),
+      this.NoteController.addlabel
+    );
   };
 
   public getRoutes = (): IRouter => {
