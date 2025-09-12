@@ -130,6 +130,13 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.updateReminder
     );
+
+    // delete reminder
+    this.router.delete(
+      '/:_id/deletereminder',
+      userAuth(this.jwtSecret),
+      this.NoteController.deleteReminder
+    );
   };
 
   public getRoutes = (): IRouter => {
