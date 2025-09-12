@@ -144,6 +144,12 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.getCollaborators
     );
+
+    this.router.post(
+      '/:_id/addcollaborators',
+      userAuth(this.jwtSecret),
+      this.NoteController.addCollaborators
+    );
   };
 
   public getRoutes = (): IRouter => {
