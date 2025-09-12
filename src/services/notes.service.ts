@@ -512,5 +512,37 @@ class NoteService {
       };
     }
   };
+
+  public deleteReminder = async (
+    body,
+    id
+  ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      if (!data || !data.reminder) {
+        return {
+          code: 400,
+          message: 'the note does not found / there is no reminder',
+          success: false
+        };
+      } else {
+        await data.updateOne({ $unset: { reminder: '' } });
+
+        return {
+          code: 200,
+          message: 'the reminder succesfully deletedd ',
+          data: data.reminder,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
