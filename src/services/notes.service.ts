@@ -544,5 +544,39 @@ class NoteService {
       };
     }
   };
+
+  // collaborators starts here:
+  public getCollaborators = async (
+    body,
+    id
+  ): Promise<string[] | INotesSuccess | INoteError | INoteNotFound> => {
+    try {
+      const data = await Notes.distinct('collaborators', {
+        createdBy: body.createdBy,
+        _id: id
+      });
+      if (!data || data.length === 0) {
+        return {
+          code: 400,
+          message: 'there is no collaborators present',
+          success: false
+        };
+      } else {
+        return {
+          code: 200,
+          message: 'the collaborators succesfully fetched ',
+          data: data,
+          success: true
+        };
+      }
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'Internal server error',
+        error: error.message,
+        success: false
+      };
+    }
+  };
 }
 export default NoteService;
