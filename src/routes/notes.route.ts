@@ -137,6 +137,13 @@ class NoteRoutes {
       userAuth(this.jwtSecret),
       this.NoteController.deleteReminder
     );
+
+    // collaborators
+    this.router.get(
+      '/:_id/getcollaborators',
+      userAuth(this.jwtSecret),
+      this.NoteController.getCollaborators
+    );
   };
 
   public getRoutes = (): IRouter => {
