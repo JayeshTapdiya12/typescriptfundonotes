@@ -176,7 +176,10 @@ class NoteService {
     id
   ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
     try {
-      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      const data = await Notes.findOne({
+        _id: id,
+        $or: [{ createdBy: body.createdBy }, { collaborators: body.Email }]
+      });
       if (!data) {
         return {
           code: 400,
@@ -184,7 +187,8 @@ class NoteService {
           success: false
         };
       } else {
-        await data.update({ ...body });
+        // await data.update({ ...body });
+        Object.assign(data, body);
         await data.save();
         return {
           code: 200,
