@@ -79,7 +79,7 @@ class NoteRoutes {
     );
 
     // add labels
-    this.router.get(
+    this.router.post(
       '/:_id/addlabel',
       userAuth(this.jwtSecret),
       this.NoteController.addlabel
@@ -87,7 +87,7 @@ class NoteRoutes {
 
     // update  label
     this.router.put(
-      '/updatelabel',
+      '/:_id/updatelabel',
       userAuth(this.jwtSecret),
       this.NoteController.updateLabel
     );

@@ -247,7 +247,7 @@ class NoteController {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const data = await this.noteService.updateLabel(req.body);
+      const data = await this.noteService.updateLabel(req.body, req.params._id);
 
       if ((data as INotesSuccess).code) {
         res.status((data as INotesSuccess).code).json(data);

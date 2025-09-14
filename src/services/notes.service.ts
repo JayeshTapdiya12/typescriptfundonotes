@@ -7,6 +7,7 @@ import {
   INoteError
 } from '../interfaces/notes.interface';
 import dotenv from 'dotenv';
+import { sendMail } from '../utils/emailsender';
 dotenv.config();
 
 class NoteService {
@@ -141,6 +142,14 @@ class NoteService {
           success: false
         };
       } else {
+        if (data.isArchived) {
+          return {
+            code: 200,
+            success: false,
+            message: 'connot trash the note because it is archived'
+          };
+        }
+
         data.isTrashed = !data.isTrashed;
         await data.save();
         return {
@@ -167,7 +176,10 @@ class NoteService {
     id
   ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
     try {
-      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
+      const data = await Notes.findOne({
+        _id: id,
+        $or: [{ createdBy: body.createdBy }, { collaborators: body.Email }]
+      });
       if (!data) {
         return {
           code: 400,
@@ -175,7 +187,8 @@ class NoteService {
           success: false
         };
       } else {
-        await data.update({ ...body });
+        // await data.update({ ...body });
+        Object.assign(data, body);
         await data.save();
         return {
           code: 200,
@@ -208,7 +221,7 @@ class NoteService {
         };
       } else {
         await data.update({ color: body.color });
-        await data.save();
+        // await data.save();
         return {
           code: 200,
           message: `Note color has been updated successfully`,
@@ -328,10 +341,11 @@ class NoteService {
     }
   };
   public updateLabel = async (
-    body
+    body,
+    id
   ): Promise<INotes[] | INotesSuccess | INoteError | INoteNotFound> => {
     try {
-      const data = await Notes.findOne({ createdBy: body.createdBy });
+      const data = await Notes.findOne({ createdBy: body.createdBy, _id: id });
       if (!data) {
         return {
           code: 400,
@@ -341,7 +355,7 @@ class NoteService {
       } else {
         let labels = data.label || [];
 
-        if (!labels.includes(body.oldLabel)) {
+        if (!labels.includes(body.oldlabel)) {
           return {
             code: 404,
             message: `Label "${body.oldlabel}" not found in this note`,
@@ -349,7 +363,7 @@ class NoteService {
           };
         }
 
-        labels = labels.map((l) => (l === body.oldLabel ? body.newLabel : l));
+        labels = labels.map((l) => (l === body.oldlabel ? body.newlabel : l));
         await data.update({ label: labels });
 
         return {
@@ -461,7 +475,8 @@ class NoteService {
             data: data.reminder
           };
         } else {
-          await data.update({ reminder: body.reminder });
+          data.reminder = body.reminder;
+          await data.save();
 
           return {
             code: 200,
@@ -593,11 +608,24 @@ class NoteService {
       } else {
         let collaborators = data.collaborators || [];
 
-        let newcollaborators = Array.isArray(body.collaborators)
-          ? body.collaborators
-          : [body.collaborators];
+        let newcollaborators = Array.isArray(body.emailid)
+          ? body.emailid
+          : [body.emailid];
         collaborators = [...new Set([...collaborators, ...newcollaborators])];
-        await data.update({ collaborators: collaborators });
+        data.collaborators = collaborators;
+        await data.save();
+
+        const content = `
+                <h1>Hello,</h1>
+                <h4>you are invited for the collbaoration of the note created by ${body.username} for the note title: ${data.title} and the description : ${data.description} </h4>
+            `;
+        const subject = `invitation of the collaborators of the note by ${body.username} `;
+
+        await sendMail({
+          email: body.emailid,
+          subject: subject,
+          body: content
+        });
 
         return {
           code: 200,
@@ -630,9 +658,26 @@ class NoteService {
         };
       } else {
         let collaborators = data.collaborators || [];
-        collaborators = collaborators.filter((c) => c !== body.email);
-
-        await data.update({ collaborators: collaborators });
+        if (!collaborators.includes(body.emailid)) {
+          return {
+            code: 404,
+            success: false,
+            message: 'email id not found in the collaborator'
+          };
+        }
+        collaborators = collaborators.filter((c) => c !== body.emailid);
+        data.collaborators = collaborators;
+        await data.save();
+        const content = `
+                <h1>Hello,</h1>
+                <h4>you are removed for the collbaoration of the note created by ${body.username} for the note title: ${data.title} and the description : ${data.description} </h4>
+            `;
+        const subject = `removed of the collaborators of the note by ${body.username} `;
+        await sendMail({
+          email: body.emailid,
+          subject: subject,
+          body: content
+        });
 
         return {
           code: 200,
